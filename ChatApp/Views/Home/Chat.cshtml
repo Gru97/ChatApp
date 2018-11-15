@@ -1,0 +1,104 @@
+﻿@model DomainModel.ViewModel.MessageAddEditModel
+
+@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="~/SignalR/Hubs/"></script>
+    
+   
+    <title>Index</title>
+</head>
+<body>
+    @using (Html.BeginForm("Chat", "Home", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <h4>tblMessage</h4>
+            <hr />
+
+
+
+            <div id="content">div content  </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.message_text, htmlAttributes: new { @class = "control-label col-md-2" ,id= "name" })
+                <div class="col-md-10">
+                    @Html.TextAreaFor(model => model.message_text, new { htmlAttributes = new { @class = "form-control" , id="message" } })
+                    @Html.ValidationMessageFor(model => model.message_text, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" id="btn" value="Send" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    }
+
+    <script>
+
+		$(document).ready(function () {
+
+			// Declare a proxy to reference the hub.
+			let chatHubProxy =
+				$.connection.chatHub
+
+			$.connection.hub.start()
+
+				.done(function () {
+
+					console.log($.connection.hub.id)
+                    
+					$('#content').prepend('<br />Connection Started!')
+				    //not needed because we are calling chatHubProxy.server.sendMessage(name, message) from action Chat
+					@*$('#btn').click(function () {
+					    var u='@ViewBag.user';
+					    var m='@ViewBag.message';
+						let name =u
+							//$('input#name').val()
+
+						let message =m
+							//$('input#message').val()
+             
+				    // Call the [SendMessage] method in the [ChatHub] class in server.
+					console.log(name,message)
+						chatHubProxy.server.sendMessage(name, message)
+
+					})*@
+
+				})
+
+				.fail(function ()
+				{
+
+					console.log('Could not Connect!')
+
+				})
+
+			// Create a javascript (client) function (method) for broadcasting by server.
+			chatHubProxy.client.sendMessage = function (name, message) {
+			    debugger;               //helps debugging the code
+				let messageString =
+					'<br /><b>' + name + ':</b> ' + message
+
+				alert(messageString);
+				$('#content').prepend(messageString)
+
+			}
+
+		})
+
+    </script>
+</body>
+</html>
