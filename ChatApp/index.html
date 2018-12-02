@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="../Scripts/jquery-1.10.2.min.js"></script>
+    <script src="../Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="../SignalR/Hubs/"></script>
+
+    
+    <script>
+        function SendMessage() {
+            var message = {
+               
+                message_text: $('#txtMessage').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: 'http://localhost:1612/api/Chat/',//change to your url
+                data: JSON.stringify(message),// pass json object to web api
+                contentType: 'application/json',
+                success: function () {
+                    alert('success!');
+                    $(function () {
+
+                        // Declare a proxy to reference the hub.
+                        let chatHubProxy =
+                            $.connection.chatHub
+
+                        $.connection.hub.start()
+
+                            .done(function () {
+
+                                console.log($.connection.hub.id)
+
+                                $('#content').prepend('<br />Connection Started!')
+
+                                let message = $('#txtMessage').val()
+
+                                // Call the [SendMessage] method in the [ChatHub] class in server.
+                                console.log(message)
+                                chatHubProxy.server.sendMessage("1", message)
+
+                            })
+
+                            .fail(function () {
+
+                                console.log('Could not Connect!')
+
+                            })
+                    });
+
+                }
+            });
+            
+        }
+
+        // Create a javascript (client) function (method) for broadcasting by server.
+        $(function () {
+            let chatHubProxy =
+                    $.connection.chatHub
+            chatHubProxy.client.broadcastMessage = function (name, message) {
+                debugger;               //helps debugging the code
+                alert("This is the message" + message)
+                let messageString =
+                    '<br /><b>' + name + ':</b> ' + message
+                $('#content').prepend(messageString)
+
+            }
+        });
+    </script>
+</head>
+<body>
+    <div id="content">Div :</div>
+    <input type="text" id="txtMessage" />
+    <input type="button" value="Send" onclick="SendMessage()" />
+</body>
+</html>

@@ -41,6 +41,7 @@ namespace DataAccess.Repository
                         user_name = u.username
 
                     };
+            q = q.Take(20);
             return q.ToList();
         }
         public List<DomainModel.ViewModel.MessageListItem> List(DateTime date)

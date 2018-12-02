@@ -1,7 +1,8 @@
-﻿@model DomainModel.ViewModel.MessageAddEditModel
+﻿@model IEnumerable<DomainModel.ViewModel.MessageListItem>
 
 @{
-    Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
 }
 
 
@@ -9,96 +10,159 @@
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
-    <script src="~/SignalR/Hubs/"></script>
-    
-   
-    <title>Index</title>
-</head>
-<body>
-    @using (Html.BeginForm("Chat", "Home", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
+    <meta charset="utf-8" />
+    <title></title>
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="../Scripts/jquery-1.10.2.min.js"></script>
+    <script src="../Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="../SignalR/Hubs/"></script>
 
-        <div class="form-horizontal">
-            <h4>tblMessage</h4>
-            <hr />
-
-
-
-            <div id="content">div content  </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.message_text, htmlAttributes: new { @class = "control-label col-md-2" ,id= "name" })
-                <div class="col-md-10">
-                    @Html.TextAreaFor(model => model.message_text, new { htmlAttributes = new { @class = "form-control" , id="message" } })
-                    @Html.ValidationMessageFor(model => model.message_text, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" id="btn" value="Send" class="btn btn-default" />
-                </div>
-            </div>
-        </div>
-    }
 
     <script>
+        $(function getAllMessages ()
+        {
+            $.ajax({
 
-		$(document).ready(function () {
+                type: "Get",
+                url: 'http://localhost:1612/api/Chat/',
+                datatype: JSON,
+                success:function(messages)
+                {
+                    //alert("successful retreival")
+                    //debugger;
 
-			// Declare a proxy to reference the hub.
-			let chatHubProxy =
-				$.connection.chatHub
+                    $.each(messages, function (index,data) {
+                        let messageString =
+                    '<b>' + data.user_name + ':</b> ' + data.message_text + '<br />'
+                        $('#content').append(messageString)
 
-			$.connection.hub.start()
+                    });
+                }
+            })
+        });
+        $(function getAllUsers() {
+            $.ajax({
 
-				.done(function () {
+                type: "Get",
+                url: 'http://localhost:1612/api/User/',
+                datatype: JSON,
+                success: function (users) {
+                    //debugger;
 
-					console.log($.connection.hub.id)
-                    
-					$('#content').prepend('<br />Connection Started!')
-				    //not needed because we are calling chatHubProxy.server.sendMessage(name, message) from action Chat
-					@*$('#btn').click(function () {
-					    var u='@ViewBag.user';
-					    var m='@ViewBag.message';
-						let name =u
-							//$('input#name').val()
+                    $.each(users, function (index, user) {
+                        let userInfo =
+                      user.username + '-' + user.status+'<br />'
+                        $('#contacts').append(userInfo)
 
-						let message =m
-							//$('input#message').val()
-             
-				    // Call the [SendMessage] method in the [ChatHub] class in server.
-					console.log(name,message)
-						chatHubProxy.server.sendMessage(name, message)
+                    });
+                }
+            })
+        });
 
-					})*@
+        function SendMessage() {
+            var message = {
 
-				})
+                message_text: $('#txtMessage').val(),
+                user_id: $('#username').val()
+            };
+            $.ajax({
+                type: "POST",
+                url: 'http://localhost:1612/api/Chat/',//change to your url
+                data: JSON.stringify(message),// pass json object to web api
+                contentType: 'application/json',
+                success: function () {
+                    //alert('success!');
+                    $("#txtMessage").empty();
+                    $(function () {
 
-				.fail(function ()
-				{
+                        // Declare a proxy to reference the hub.
+                        let chatHubProxy =
+                            $.connection.chatHub
 
-					console.log('Could not Connect!')
+                        $.connection.hub.start()
 
-				})
+                            .done(function () {
 
-			// Create a javascript (client) function (method) for broadcasting by server.
-			chatHubProxy.client.sendMessage = function (name, message) {
-			    debugger;               //helps debugging the code
-				let messageString =
-					'<br /><b>' + name + ':</b> ' + message
+                                console.log($.connection.hub.id)
 
-				alert(messageString);
-				$('#content').prepend(messageString)
+                                //$('#content').prepend('<br />Connection Started!')
 
-			}
+                                let message = $('#txtMessage').val()
+                                let userid = $('#username').val()
 
-		})
+                                // Call the [SendMessage] method in the [ChatHub] class in server.
+                                console.log(message)
+                                chatHubProxy.server.sendMessage(userid, message)
 
+                            })
+
+                            .fail(function () {
+
+                                console.log('Could not Connect!')
+
+                            })
+                    });
+
+                }
+            });
+
+        }
+
+        // Create a javascript (client) function (method) for broadcasting by server.
+        $(function () {
+            let chatHubProxy =
+                    $.connection.chatHub
+            chatHubProxy.client.broadcastMessage = function (name, message) {
+                //debugger;               //helps debugging the code
+                //alert("This is the message" + message)
+                let messageString =
+                    '<br /><b>' + name + ':</b> ' + message
+                $('#content').append(messageString)
+
+            }
+        });
     </script>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <input type="text" id="username"  class="form-control"/>
+        </div>
+        <h4>Contacts</h4>
+        <div id="contacts" class="col-sm-4 inlineDiv">
+            <ul id="contactlistul">
+                
+            </ul>
+        </div>
+
+
+
+        <div class="form-group col-sm-8">
+
+            <div id="content" class=" messageHistory">
+                @*@foreach (var item in Model)
+                {
+                    @Html.DisplayFor(model=>item.user_name)
+                    <span>:</span>
+                    @Html.DisplayFor(model=>item.message_text)
+                    <br />
+                }*@
+            </div>
+            <br />
+
+            <div class=" text-center">
+                <div class="input-group FullWidth">
+                    <input type="text" id="txtMessage" class="form-control " />
+                </div>
+
+                <br />
+                <div class="form-group">
+                    <input type="button" value="Send" class="btn btn-success" onclick="SendMessage()" />
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 </body>
 </html>

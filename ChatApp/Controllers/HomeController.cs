@@ -11,7 +11,9 @@ namespace ChatApp.Controllers
     {
         public ActionResult Index()
         {
+            //get list of message
             return View();
+           
         }
 
         [HttpPost]
@@ -28,6 +30,12 @@ namespace ChatApp.Controllers
 
         public ActionResult Chat()
         {
+            using (DataAccess.Repository.MessageRepo repo = new DataAccess.Repository.MessageRepo())
+            {
+                var lst = repo.List();
+                //return View(lst);
+
+            }
             return View();
         }
 
