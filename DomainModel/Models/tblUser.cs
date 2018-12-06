@@ -8,6 +8,7 @@ namespace DomainModel.Models
         public tblUser()
         {
             this.tblMessages = new List<tblMessage>();
+            this.tblRoomUsers = new List<tblRoomUser>();
         }
 
         public int user_id { get; set; }
@@ -16,5 +17,6 @@ namespace DomainModel.Models
         public string password { get; set; }
         public Nullable<short> status { get; set; }
         public virtual ICollection<tblMessage> tblMessages { get; set; }
+        public virtual ICollection<tblRoomUser> tblRoomUsers { get; set; }
     }
 }

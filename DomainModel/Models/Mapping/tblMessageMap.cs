@@ -18,6 +18,7 @@ namespace DomainModel.Models.Mapping
             this.Property(t => t.receiver_id).HasColumnName("receiver_id");
             this.Property(t => t.message_text).HasColumnName("message_text");
             this.Property(t => t.date).HasColumnName("date");
+            this.Property(t => t.type).HasColumnName("type");
 
             // Relationships
             this.HasOptional(t => t.tblUser)

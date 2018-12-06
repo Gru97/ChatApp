@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccess.Repository
 {
-    public class MessageRepo:IDisposable
+    public class MessageRepo : IDisposable
     {
         DomainModel.Models.ChatAppContext db = new DomainModel.Models.ChatAppContext();
 
@@ -17,8 +17,11 @@ namespace DataAccess.Repository
                 date = DateTime.Now,
                 message_text = m.message_text,
                 user_id = m.user_id,
-                receiver_id = 2             //for now
+                receiver_id = m.receiver_id,
+                type=m.type
                 
+                
+
             };
 
             db.tblMessages.Add(message);
@@ -30,9 +33,11 @@ namespace DataAccess.Repository
             db.Dispose();
         }
 
-        public List<DomainModel.ViewModel.MessageListItem> List()
+        public List<DomainModel.ViewModel.MessageListItem> List(DomainModel.ViewModel.SenderReceiver sr)
         {
             var q = from m in db.tblMessages
+                    where m.receiver_id == sr.receiver_id && m.user_id == sr.user_id ||
+                    m.receiver_id==sr.user_id && m.user_id==sr.receiver_id
                     join u in db.tblUsers on m.user_id equals u.user_id
                     select new DomainModel.ViewModel.MessageListItem
                     {

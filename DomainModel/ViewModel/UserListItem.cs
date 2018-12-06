@@ -10,5 +10,7 @@ namespace DomainModel.ViewModel
     {
         public short? status { get; set; }
         public string username { get; set; }
+
+        public int user_id { get; set; }
     }
 }

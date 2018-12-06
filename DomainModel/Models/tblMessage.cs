@@ -10,6 +10,7 @@ namespace DomainModel.Models
         public Nullable<int> receiver_id { get; set; }
         public string message_text { get; set; }
         public Nullable<System.DateTime> date { get; set; }
+        public Nullable<bool> type { get; set; }
         public virtual tblUser tblUser { get; set; }
     }
 }

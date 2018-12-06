@@ -6,13 +6,10 @@ using System.Threading.Tasks;
 
 namespace DomainModel.ViewModel
 {
-    public class MessageAddEditModel
+    public class SenderReceiver
     {
-        public string message_text { get; set; }
         public int user_id { get; set; }
         public int receiver_id { get; set; }
-        public int room_id { get; set; }
-        public bool type { get; set; }
-
+        public int type { get; set; }
     }
 }

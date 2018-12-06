@@ -32,7 +32,7 @@ namespace ChatApp.Controllers
         {
             using (DataAccess.Repository.MessageRepo repo = new DataAccess.Repository.MessageRepo())
             {
-                var lst = repo.List();
+                //var lst = repo.List();
                 //return View(lst);
 
             }

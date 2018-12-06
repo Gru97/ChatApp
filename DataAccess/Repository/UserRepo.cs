@@ -20,7 +20,8 @@ namespace DataAccess.Repository
                     select new DomainModel.ViewModel.UserListItem
                     {
                         username = u.username,
-                        status = u.status
+                        status = u.status,
+                        user_id=u.user_id
 
                     };
             return q.ToList();

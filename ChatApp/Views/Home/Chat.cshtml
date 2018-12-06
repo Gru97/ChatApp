@@ -13,24 +13,36 @@
     <meta charset="utf-8" />
     <title></title>
     <link href="~/Content/Site.css" rel="stylesheet" />
-    <script src="../Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="../Scripts/jquery.signalR-2.3.0.min.js"></script>
     <script src="../SignalR/Hubs/"></script>
 
 
     <script>
-        $(function getAllMessages ()
+        var Globalreceiver_id;
+        function getAllMessages (id, messageType)
         {
+
+            Globalreceiver_id = id;
+            var sr = 
+                {
+                    type:messageType,
+                    user_id: $('#username').val(),
+                    receiver_id: id
+                };
+            debugger;
             $.ajax({
 
                 type: "Get",
-                url: 'http://localhost:1612/api/Chat/',
+                url: 'http://localhost:1612/api/Chat/?user_id='+sr.user_id+'&&receiver_id='+sr.receiver_id,
                 datatype: JSON,
+                data: JSON.stringify(sr),// pass json object to web api
                 success:function(messages)
                 {
                     //alert("successful retreival")
                     //debugger;
 
+                    $('#content').empty()
                     $.each(messages, function (index,data) {
                         let messageString =
                     '<b>' + data.user_name + ':</b> ' + data.message_text + '<br />'
@@ -39,7 +51,7 @@
                     });
                 }
             })
-        });
+        };
         $(function getAllUsers() {
             $.ajax({
 
@@ -50,8 +62,10 @@
                     //debugger;
 
                     $.each(users, function (index, user) {
+                      
                         let userInfo =
-                      user.username + '-' + user.status+'<br />'
+                      '<li onClick="getAllMessages(\'' + user.user_id+ '\',0)">' + user.username + '-' + user.status + '</li>'
+
                         $('#contacts').append(userInfo)
 
                     });
@@ -59,11 +73,15 @@
             })
         });
 
+
+       
+
         function SendMessage() {
             var message = {
 
                 message_text: $('#txtMessage').val(),
-                user_id: $('#username').val()
+                user_id: $('#username').val(),
+                receiver_id:Globalreceiver_id
             };
             $.ajax({
                 type: "POST",
@@ -121,6 +139,8 @@
 
             }
         });
+
+        
     </script>
 </head>
 <body>
@@ -131,8 +151,12 @@
         <h4>Contacts</h4>
         <div id="contacts" class="col-sm-4 inlineDiv">
             <ul id="contactlistul">
-                
             </ul>
+        </div>
+
+        <h4>Rooms</h4>
+        <div id="rooms" class="col-sm-4 inlineDiv">
+            <ul id="roomList"></ul>
         </div>
 
 
