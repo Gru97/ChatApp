@@ -16,17 +16,25 @@
     <script src="~/Scripts/jquery-3.3.1.min.js"></script>
     <script src="../Scripts/jquery.signalR-2.3.0.min.js"></script>
     <script src="../SignalR/Hubs/"></script>
-
+   
 
     <script>
         var Globalreceiver_id;
-        function getAllMessages (id, messageType)
-        {
+      
+        function ShowModal() {
+            $("#myModal").modal("show");
+            getAllContacts();
+        }
+        function hideModal() {
+            $("#myModal").modal("hide");
+        }
+
+        function getAllMessages(id, messageType) {
 
             Globalreceiver_id = id;
-            var sr = 
+            var sr =
                 {
-                    type:messageType,
+                    type: messageType,
                     user_id: $('#username').val(),
                     receiver_id: id
                 };
@@ -34,16 +42,15 @@
             $.ajax({
 
                 type: "Get",
-                url: 'http://localhost:1612/api/Chat/?user_id='+sr.user_id+'&&receiver_id='+sr.receiver_id,
+                url: 'http://localhost:1612/api/Chat/?user_id=' + sr.user_id + '&&receiver_id=' + sr.receiver_id + '&&type=' + sr.type,
                 datatype: JSON,
                 data: JSON.stringify(sr),// pass json object to web api
-                success:function(messages)
-                {
+                success: function (messages) {
                     //alert("successful retreival")
                     //debugger;
 
                     $('#content').empty()
-                    $.each(messages, function (index,data) {
+                    $.each(messages, function (index, data) {
                         let messageString =
                     '<b>' + data.user_name + ':</b> ' + data.message_text + '<br />'
                         $('#content').append(messageString)
@@ -52,7 +59,9 @@
                 }
             })
         };
+
         $(function getAllUsers() {
+
             $.ajax({
 
                 type: "Get",
@@ -62,9 +71,9 @@
                     //debugger;
 
                     $.each(users, function (index, user) {
-                      
+
                         let userInfo =
-                      '<li onClick="getAllMessages(\'' + user.user_id+ '\',0)">' + user.username + '-' + user.status + '</li>'
+                      '<li class="list-group-item" onClick="getAllMessages(\'' + user.user_id + '\',false)">' + user.username + '-' + user.status + '</li>'
 
                         $('#contacts').append(userInfo)
 
@@ -74,14 +83,73 @@
         });
 
 
-       
+
+        function getAllContacts(RoomID) {
+
+            //for model
+            $.ajax({
+
+                type: "Get",
+                url: 'http://localhost:1612/api/User/',
+                datatype: JSON,
+                success: function (users) {
+                    //debugger;
+
+                    $.each(users, function (index, user) {
+
+                        let userInfo =
+                      '<li class="list-group-item" onClick="AddUserToRoom(\'' + user.user_id + '\')">' + user.username + '-' + user.status + '</li>'
+
+                        $('#dvContent').append(userInfo)
+
+                    });
+                }
+            });
+
+        }
+
+        $(function getAllRooms() {
+            $.ajax({
+                type: "Get",
+                url: 'http://localhost:1612/api/Room/',
+                datatype: JSON,
+                success: function (rooms) {
+                    $.each(rooms, function (index, room) {
+                        let roomInfo =
+                            '<li class="list-group-item" onClick="getAllMessages(\'' + room.RoomID + '\',true)">' + room.RoomName + '-' + room.Picture + '</li>'
+
+                        $('#roomList').append(roomInfo)
+                    })
+                }
+
+            })
+
+        });
+
+        $(function getAllRooms() {
+            $.ajax({
+                type: "Get",
+                url: 'http://localhost:1612/api/Room/' + $('#username').val(),
+                datatype: JSON,
+                success: function (rooms) {
+                    $.each(rooms, function (index, room) {
+                        let roomInfo =
+                            '<li class="list-group-item" onClick="getAllMessages(\'' + room.RoomID + '\',1)">' + room.RoomName + '-' + room.Picture + '</li>'
+
+                        $('#myroomList').append(roomInfo)
+                    })
+                }
+
+            })
+
+        });
 
         function SendMessage() {
             var message = {
 
                 message_text: $('#txtMessage').val(),
                 user_id: $('#username').val(),
-                receiver_id:Globalreceiver_id
+                receiver_id: Globalreceiver_id
             };
             $.ajax({
                 type: "POST",
@@ -125,7 +193,6 @@
             });
 
         }
-
         // Create a javascript (client) function (method) for broadcasting by server.
         $(function () {
             let chatHubProxy =
@@ -139,26 +206,65 @@
 
             }
         });
+        function AddUserToRoom(id) {
+            var rm = {
+                RoomID: Globalreceiver_id,
+                UserID: id
+            };
+            debugger;
+            $.ajax({
 
-        
+                type: "GET",
+                url: 'http://localhost:1612/api/User/AddUserToRoom/?RoomID=' + rm.RoomID + '&&UserID=' + rm.UserID,
+                datatype: JSON,
+                success: function (data) {
+                    hideModal();
+                    if (res = !null) {
+                        var joinMessage = $('#username').val() + " Added " + data;
+                        $('#content').append(joinMessage);
+                    }
+
+
+                }
+            });
+
+        }
+
+
     </script>
 </head>
 <body>
     <div class="container">
         <div>
+
             <input type="text" id="username"  class="form-control"/>
         </div>
-        <h4>Contacts</h4>
-        <div id="contacts" class="col-sm-4 inlineDiv">
-            <ul id="contactlistul">
-            </ul>
-        </div>
+        <div class="col-sm-4 inlineDiv">
+            
+            <div class="table-bordered Marginaldiv">
+                <h4>Contacts</h4>
+                <div id="contacts" class="col-sm-12  ">
+                    <ul id="contactlistul" class="list-group "></ul>
+                </div>
+            </div>
 
-        <h4>Rooms</h4>
-        <div id="rooms" class="col-sm-4 inlineDiv">
-            <ul id="roomList"></ul>
-        </div>
+            <div class="table-bordered Marginaldiv">
+                <h4>My Rooms</h4>
+                <div id="myrooms" class="col-sm-12  ">
+                    <ul id="myroomList"></ul>
+                </div>
+            </div>
+            
 
+            <div class="table-bordered Marginaldiv">
+                <h4>Rooms</h4>
+                <div id="rooms" class="col-sm-12   ">
+                    <ul id="roomList"></ul>
+                </div>
+            </div>
+
+
+        </div>
 
 
         <div class="form-group col-sm-8">
@@ -182,11 +288,28 @@
                 <br />
                 <div class="form-group">
                     <input type="button" value="Send" class="btn btn-success" onclick="SendMessage()" />
+                    <input type="button" value="Add To Room" class="btn btn-default" onclick="ShowModal()" />
                 </div>
             </div>
 
         </div>
     </div>
 
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Add</h4>
+                </div>
+                <div class="modal-body">
+                    <div id="dvContent">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
 </body>
 </html>

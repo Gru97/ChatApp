@@ -65,9 +65,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MessageAddEditModel.cs" />
     <Compile Include="ViewModel\MessageListItem.cs" />
+    <Compile Include="ViewModel\RoomListItem.cs" />
+    <Compile Include="ViewModel\RoomUser.cs" />
     <Compile Include="ViewModel\SenderReceiver.cs" />
     <Compile Include="ViewModel\UserAddEditModel.cs" />
     <Compile Include="ViewModel\UserListItem.cs" />
+    <Compile Include="ViewModel\UserLogInModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

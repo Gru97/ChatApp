@@ -35,19 +35,37 @@ namespace DataAccess.Repository
 
         public List<DomainModel.ViewModel.MessageListItem> List(DomainModel.ViewModel.SenderReceiver sr)
         {
-            var q = from m in db.tblMessages
-                    where m.receiver_id == sr.receiver_id && m.user_id == sr.user_id ||
-                    m.receiver_id==sr.user_id && m.user_id==sr.receiver_id
-                    join u in db.tblUsers on m.user_id equals u.user_id
-                    select new DomainModel.ViewModel.MessageListItem
-                    {
-                        date = m.date,
-                        message_text = m.message_text,
-                        user_name = u.username
+            //type=0 p2p
+            //type=1 is group
+            if (!sr.type)
+            {
+                var q = from m in db.tblMessages
+                        where m.type==sr.type && m.receiver_id == sr.receiver_id && m.user_id == sr.user_id ||
+                        m.receiver_id == sr.user_id && m.user_id == sr.receiver_id
+                        join u in db.tblUsers on m.user_id equals u.user_id
+                        select new DomainModel.ViewModel.MessageListItem
+                        {
+                            date = m.date,
+                            message_text = m.message_text,
+                            user_name = u.username
 
-                    };
-            q = q.Take(20);
-            return q.ToList();
+                        };
+                q = q.Take(20);
+                return q.ToList();
+            }
+            else
+            {
+                var q = from m in db.tblMessages
+                        join u in db.tblUsers on m.user_id equals u.user_id
+                        where m.receiver_id == sr.receiver_id && m.type== sr.type
+                        select new DomainModel.ViewModel.MessageListItem { date = m.date, message_text = m.message_text, user_name = u.username };
+               
+                q = q.Take(20);
+                return q.ToList();
+
+            }
+
+
         }
         public List<DomainModel.ViewModel.MessageListItem> List(DateTime date)
         {

@@ -7,6 +7,7 @@ using System.Web.Http;
 
 namespace ChatApp.Controllers
 {
+    [RoutePrefix("api/User")]
     public class UserController : ApiController
     {
         // GET: api/User
@@ -38,6 +39,27 @@ namespace ChatApp.Controllers
         // DELETE: api/User/5
         public void Delete(int id)
         {
+        }
+
+        //GET: api/User/AddUserToRoom
+        [HttpGet]
+        [Route("AddUserToRoom/")]
+        public string AddUserToRoom([FromUri]DomainModel.ViewModel.RoomUser rm)
+        {
+            using (DataAccess.Repository.UserRepo repo=new DataAccess.Repository.UserRepo())
+            {
+                if (repo.AddUserToRoom(rm))
+                {
+                    using (DataAccess.Repository.UserRepo r=new DataAccess.Repository.UserRepo())
+                    {
+                        var u = r.Get(rm.UserID);
+                        return u.username;
+                    }
+                 
+                }
+                else
+                    return null;
+            }
         }
     }
 }

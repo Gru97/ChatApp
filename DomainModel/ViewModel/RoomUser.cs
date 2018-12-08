@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace DomainModel.ViewModel
 {
-    public class SenderReceiver
+    public class RoomUser
     {
-        public int user_id { get; set; }
-        public int receiver_id { get; set; }
-        public bool type { get; set; }
+        public int RoomID { get; set; }
+        public int UserID { get; set; }
     }
 }

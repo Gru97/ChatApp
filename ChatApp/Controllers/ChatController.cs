@@ -13,7 +13,7 @@ namespace ChatApp.Controllers
         // GET: api/Chat
         public IEnumerable<DomainModel.ViewModel.MessageListItem> Get([FromUri]DomainModel.ViewModel.SenderReceiver sr)
         {
-
+            
             //I added [FromUri] so sr will be binded to whatever view sends as a json object
             using (DataAccess.Repository.MessageRepo repo = new DataAccess.Repository.MessageRepo())
             {

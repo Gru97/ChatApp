@@ -47,3 +47,10 @@ textarea {
 .inlineDiv{
     display:inline !important;
 }
+li{
+    cursor:pointer;
+}
+Marginaldiv{
+    margin-bottom: 20px !important;
+    padding:5px !important;
+}

@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace DomainModel.ViewModel
 {
-    public class SenderReceiver
+    public class UserLogInModel
     {
-        public int user_id { get; set; }
-        public int receiver_id { get; set; }
-        public bool type { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public bool rememberMe { get; set; }
     }
 }

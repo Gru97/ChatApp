@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace DomainModel.ViewModel
 {
-    public class SenderReceiver
+    public class RoomListItem
     {
-        public int user_id { get; set; }
-        public int receiver_id { get; set; }
-        public bool type { get; set; }
+        public int RoomID { get; set; }
+
+        public string RoomName { get; set; }
+        public string Picture { get; set; }
     }
 }
