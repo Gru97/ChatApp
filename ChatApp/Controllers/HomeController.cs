@@ -14,7 +14,7 @@ namespace ChatApp.Controllers
         {
             //get list of message
             return View();
-
+            
         }
 
         [HttpPost]
