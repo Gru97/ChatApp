@@ -41,7 +41,7 @@ namespace DataAccess.Repository
             {
                 var q = from m in db.tblMessages
                         where m.type==sr.type && m.receiver_id == sr.receiver_id && m.user_id == sr.user_id ||
-                        m.receiver_id == sr.user_id && m.user_id == sr.receiver_id
+                        m.type == sr.type && m.receiver_id == sr.user_id && m.user_id == sr.receiver_id
                         join u in db.tblUsers on m.user_id equals u.user_id
                         select new DomainModel.ViewModel.MessageListItem
                         {

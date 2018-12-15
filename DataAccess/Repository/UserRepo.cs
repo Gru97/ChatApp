@@ -61,5 +61,10 @@ namespace DataAccess.Repository
             
                      
         }
+        public int GetUserIDByUsername(string username)
+        {
+            var u = db.tblUsers.SingleOrDefault(x => x.username == username);
+            return u.user_id;
+        }
     }
 }

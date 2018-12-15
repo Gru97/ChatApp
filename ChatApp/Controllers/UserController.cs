@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace ChatApp.Controllers
@@ -44,16 +45,18 @@ namespace ChatApp.Controllers
         //GET: api/User/AddUserToRoom
         [HttpGet]
         [Route("AddUserToRoom/")]
-        public string AddUserToRoom([FromUri]DomainModel.ViewModel.RoomUser rm)
+        public object AddUserToRoom([FromUri]DomainModel.ViewModel.RoomUser rm)
         {
             using (DataAccess.Repository.UserRepo repo=new DataAccess.Repository.UserRepo())
             {
                 if (repo.AddUserToRoom(rm))
                 {
-                    using (DataAccess.Repository.UserRepo r=new DataAccess.Repository.UserRepo())
+                    using (DataAccess.Repository.UserRepo r = new DataAccess.Repository.UserRepo())
                     {
-                        var u = r.Get(rm.UserID);
-                        return u.username;
+                        //AddedUser is the user who has been added to room
+                        var AddedUser = r.Get(rm.UserID).username;
+                        var CurrentUser= HttpContext.Current.User.Identity.Name;
+                        return new { sender=AddedUser,reciver= CurrentUser }; 
                     }
                  
                 }
