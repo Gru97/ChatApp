@@ -141,6 +141,7 @@ function SendMessage() {
             //alert('success!');
             $("#txtMessage").empty();
             $(function () {
+            
 
                 // Declare a proxy to reference the hub.
                 let chatHubProxy =
@@ -202,7 +203,7 @@ function AddUserToRoom(id) {
         success: function (data) {
             hideModal();
             if (data !=null) {
-                var joinMessage = data.sender + " Added " + data.reciver;
+                var joinMessage = data.User + " Added " + data.Added;
                 $('#content').append(joinMessage);
             }
 

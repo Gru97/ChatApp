@@ -9,6 +9,7 @@ using System.Web.Http;
 
 namespace ChatApp.Controllers
 {
+    [RoutePrefix("api/Chat")]
     public class ChatController : ApiController
     {
 
@@ -53,7 +54,7 @@ namespace ChatApp.Controllers
         public void Delete(int id)
         {
         }
-        public int CurrentUserId()
+        private int CurrentUserId()
         {
             string id = HttpContext.Current.User.Identity.Name;
             DataAccess.Repository.UserRepo r = new DataAccess.Repository.UserRepo();

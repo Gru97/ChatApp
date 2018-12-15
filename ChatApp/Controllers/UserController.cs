@@ -56,7 +56,7 @@ namespace ChatApp.Controllers
                         //AddedUser is the user who has been added to room
                         var AddedUser = r.Get(rm.UserID).username;
                         var CurrentUser= HttpContext.Current.User.Identity.Name;
-                        return new { sender=AddedUser,reciver= CurrentUser }; 
+                        return new { Added = AddedUser,User= CurrentUser }; 
                     }
                  
                 }
