@@ -26,6 +26,16 @@ namespace DataAccess.Repository
                     select new DomainModel.ViewModel.RoomListItem {RoomID=rooms.RoomID, RoomName = rooms.RoomName, Picture = rooms.Picture };
             return q.ToList();
         }
+        public DomainModel.ViewModel.RoomListItem GetRoomByID(int id)
+        {
+            var r= db.tblRooms.SingleOrDefault(x => x.RoomID == id);
+            return new DomainModel.ViewModel.RoomListItem
+            {
+                RoomID = r.RoomID,
+                Picture = r.Picture,
+                RoomName = r.RoomName
+            };
+        }
         public void Dispose()
         {
             db.Dispose();

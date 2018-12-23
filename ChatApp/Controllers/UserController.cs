@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web;
 using System.Web.Http;
+using System.Web.Security;
 
 namespace ChatApp.Controllers
 {
@@ -28,20 +29,30 @@ namespace ChatApp.Controllers
         }
 
         // POST: api/User
-        public void Post([FromBody]string value)
+        public string PostLogin(DomainModel.ViewModel.UserLogInModel lg)
         {
-        }
+            using (DataAccess.Repository.UserRepo repo = new DataAccess.Repository.UserRepo())
+            {
+                if (repo.LogIn(lg))
+                {
+                    FormsAuthentication.SetAuthCookie(lg.username, lg.rememberMe);
 
-        // PUT: api/User/5
-        public void Put(int id, [FromBody]string value)
+                    return HttpContext.Current.User.Identity.Name;
+
+                }
+                else
+                    return null;
+
+
+            }    
+      }
+
+        [HttpGet]
+        [Route("logout/")]
+        public void Logout()
         {
+            FormsAuthentication.SignOut();
         }
-
-        // DELETE: api/User/5
-        public void Delete(int id)
-        {
-        }
-
         //GET: api/User/AddUserToRoom
         [HttpGet]
         [Route("AddUserToRoom/")]
@@ -62,6 +73,16 @@ namespace ChatApp.Controllers
                 }
                 else
                     return null;
+            }
+        }
+        [HttpPost]
+        [Route("Signup/")]
+        public bool SignUp(DomainModel.ViewModel.UserAddEditModel u)
+        {
+            using (DataAccess.Repository.UserRepo repo=new DataAccess.Repository.UserRepo())
+            {
+                return repo.Add(u);
+               
             }
         }
     }

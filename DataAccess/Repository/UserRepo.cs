@@ -66,5 +66,27 @@ namespace DataAccess.Repository
             var u = db.tblUsers.SingleOrDefault(x => x.username == username);
             return u.user_id;
         }
+        public string GetUsernameByUserID(int id)
+        {
+            var u = db.tblUsers.SingleOrDefault(x => x.user_id == id);
+            return u.username;
+        }
+        public bool Add(DomainModel.ViewModel.UserAddEditModel u)
+        {
+            bool result = false;
+            if(u.agreement)
+            {
+                DomainModel.Models.tblUser user = new DomainModel.Models.tblUser
+                {
+                    password = u.password,
+                    username = u.username,
+
+                };
+                db.tblUsers.Add(user);
+                db.SaveChanges();
+                result = true;
+            }
+            return result;
+        }
     }
 }

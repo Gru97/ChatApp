@@ -3,9 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title - Chat App</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+    <script src="~/Scripts/login.js"></script>
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top">
@@ -24,5 +26,6 @@
     @RenderSection("scripts", required: false)
     <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
     <script src="~/SignalR/Hubs/"></script>
+
 </body>
 </html>

@@ -28,6 +28,24 @@ namespace ChatApp.Controllers
             }
         }
 
+        [Route("GetUserNameByID/")]
+        public string GetUserNameByID(int id)
+        {
+            using (DataAccess.Repository.UserRepo repo=new DataAccess.Repository.UserRepo())
+            {
+                return repo.GetUsernameByUserID(id);
+            }
+        }
+
+        [Route("GetRoomInfoByID/")]
+        public string GetRoomInfoByID(int id)
+        {
+            using (DataAccess.Repository.RoomRepo repo = new DataAccess.Repository.RoomRepo())
+            {
+                return repo.GetRoomByID(id).RoomName;
+            }
+        }
+
         // GET: api/Chat/5
         public string Get(int id)
         {

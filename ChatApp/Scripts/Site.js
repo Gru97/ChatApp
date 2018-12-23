@@ -1,6 +1,7 @@
 ﻿var Globalreceiver_id;
 var GlobalType;
-      
+var GlobalCurrentArea;
+var GlobalCurrentAreaType;
 function ShowModal() {
     $("#myModal").modal("show");
           
@@ -9,9 +10,48 @@ function ShowModal() {
 function hideModal() {
     $("#myModal").modal("hide");
 }
+function getUsernameByID(id)
+{
+    $.ajax({
+
+        type: "Get",
+        url: 'http://localhost:1612/api/Chat/GetUserNameByID/?id=' + id,
+        datatype: JSON,
+        data: JSON.stringify(id),// pass json object to web api
+        success: function (data) {
+            debugger;
+            $('#receiverInfo').empty();
+            $('#receiverInfo').append(data);
+        }
+    });
+
+}
+function GetRoomInfoByID(id) {
+    $.ajax({
+
+        type: "Get",
+        url: 'http://localhost:1612/api/Chat/GetRoomInfoByID/?id=' + id,
+        datatype: JSON,
+        data: JSON.stringify(id),// pass json object to web api
+        success: function (data) {
+            debugger;
+            $('#receiverInfo').empty();
+            $('#receiverInfo').append(data);
+        }
+    });
+
+}
+
 
 function getAllMessages(id, messageType) {
 
+    if (messageType == false)
+        getUsernameByID(id);
+    else
+        GetRoomInfoByID(id);
+
+    GlobalCurrentArea = id;
+    GlobalCurrentAreaType = messageType;
     Globalreceiver_id = id;
     GlobalType = messageType;
     var sr =
@@ -37,6 +77,7 @@ function getAllMessages(id, messageType) {
             '<b>' + data.user_name + ':</b> ' + data.message_text + '<br />'
                 $('#content').append(messageString)
 
+               
             });
         }
     })
@@ -152,15 +193,16 @@ function SendMessage() {
                     .done(function () {
 
                         console.log($.connection.hub.id)
+                        
+                        console.log($.connection.hub.id)
 
                         //$('#content').prepend('<br />Connection Started!')
 
                         let message = $('#txtMessage').val()
-                        let userid = $('#username').val()
 
                         // Call the [SendMessage] method in the [ChatHub] class in server.
                         console.log(message)
-                        chatHubProxy.server.sendMessage(userid, message)
+                        chatHubProxy.server.sendMessage(Globalreceiver_id, message, GlobalType)
 
                     })
 
@@ -175,17 +217,47 @@ function SendMessage() {
     });
 
 }
+$(function () {
+    let chatHubProxy = $.connection.chatHub
+    $.connection.hub.start()
+
+                    .done(function () {
+
+                        
+                        chatHubProxy.server.registerConId()
+
+                    })
+
+                    .fail(function () {
+
+                        console.log('Could not Connect!')
+
+                    })
+})
 // Create a javascript (client) function (method) for broadcasting by server.
 $(function () {
     let chatHubProxy =
             $.connection.chatHub
-    chatHubProxy.client.broadcastMessage = function (name, message) {
+    chatHubProxy.client.broadcastMessage = function (name, message,receiver) {
         //debugger;               //helps debugging the code
         //alert("This is the message" + message)
-        let messageString =
-            '<br /><b>' + name + ':</b> ' + message
-        $('#content').append(messageString)
+        if (receiver == GlobalCurrentArea && GlobalCurrentAreaType==true) {
 
+            let messageString =
+                '<br /><b>' + name + ':</b> ' + message
+            debugger;
+            $('#content').append(messageString)
+        }     
+    }
+    chatHubProxy.client.peerTopeer = function (name, message, receiver) {
+        debugger;               //helps debugging the code
+        //alert("This is the message" + message)
+        if ( GlobalCurrentAreaType == false) {
+            let messageString =
+                '<br /><b>' + name + ':</b> ' + message
+            debugger;
+            $('#content').append(messageString)
+        }
     }
 });
 
@@ -213,3 +285,11 @@ function AddUserToRoom(id) {
 
 }
 
+$(document).keypress(function (e) {
+    debugger;
+    var key = e.which;
+    if (key == 13)  // the enter key code
+    {
+        SendMessage();
+    }
+});
